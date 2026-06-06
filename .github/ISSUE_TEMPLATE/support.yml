@@ -29,7 +29,7 @@ body:
     id: version
     attributes:
       label: Outerline version
-      placeholder: Example: 1.0 (1235)
+      placeholder: "Example: 1.0 (1235)"
     validations:
       required: false
   - type: textarea
