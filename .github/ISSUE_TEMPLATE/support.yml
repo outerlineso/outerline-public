@@ -1,0 +1,41 @@
+name: Support question
+description: Ask a public support question about using Outerline
+title: "Support: "
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please keep support questions safe for a public tracker. Do not post private document contents or credentials.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What do you need help with?
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS
+        - iOS
+        - Both
+        - Not sure
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Outerline version
+      placeholder: Example: 1.0 (1235)
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Redacted details that might help answer the question.
+    validations:
+      required: false
