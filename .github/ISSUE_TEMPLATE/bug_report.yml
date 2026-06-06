@@ -44,7 +44,7 @@ body:
     id: version
     attributes:
       label: Outerline version
-      placeholder: Example: 1.0 (1235)
+      placeholder: "Example: 1.0 (1235)"
     validations:
       required: false
   - type: dropdown
@@ -62,7 +62,7 @@ body:
     id: os-version
     attributes:
       label: OS version
-      placeholder: Example: macOS 26.0 or iOS 26.0
+      placeholder: "Example: macOS 26.0 or iOS 26.0"
     validations:
       required: false
   - type: dropdown
