@@ -1,0 +1,86 @@
+name: Bug report
+description: Report something that is not working as expected in Outerline
+title: "Bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please do not include private document contents, credentials, or sensitive file paths.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+      placeholder: A clear, concise description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What actions lead to the issue?
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Outerline version
+      placeholder: Example: 1.0 (1235)
+    validations:
+      required: false
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS
+        - iOS
+        - Both
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: OS version
+      placeholder: Example: macOS 26.0 or iOS 26.0
+    validations:
+      required: false
+  - type: dropdown
+    id: storage
+    attributes:
+      label: Vault location
+      options:
+        - Local folder
+        - iCloud Drive
+        - App-owned iCloud storage
+        - Dropbox or other synced folder
+        - Not sure
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Screenshots, redacted logs, or related issue links.
+    validations:
+      required: false
