@@ -1,0 +1,13 @@
+interface:
+  display_name: "Outerline"
+  short_description: "Work with Outerline documents through MCP"
+  default_prompt: "Use $outerline to read or edit my Outerline documents through the MCP server."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "outerline"
+      description: "Outerline MCP server for markdown vault access and live editor operations"
+
+policy:
+  allow_implicit_invocation: true
