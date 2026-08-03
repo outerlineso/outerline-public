@@ -1,6 +1,6 @@
 ---
 name: outerline
-description: "Use Outerline MCP to read, search, edit, organize, tag, star, and deep-link markdown notes. Trigger for Outerline vault content, current notes/selections, or outerline:// links."
+description: "Use Outerline MCP to read, search, edit, organize, tag, star, comment on, and deep-link markdown notes. Trigger for Outerline vault content, current notes/selections, or outerline:// links."
 ---
 
 # Outerline MCP
@@ -45,6 +45,7 @@ Fast defaults:
 - Find notes: `search_documents` for text, `list_documents` for folders/tags/starred, `find_folder` for folder names.
 - Read note content: `get_document`.
 - Understand structure: `get_outline`, `get_links`, `get_backlinks`, `get_graph`, `get_tags`, `get_annotations`.
+- Review or leave margin feedback: `list_comments` to read, `create_comment` to add one anchored to exact selected text.
 - Follow a deeplink: `resolve_deep_link`, then `get_document` or `get_outline` as needed.
 - Create a deeplink: `get_deep_link` with `path` or `uuid`; add `line`, `heading`, `annotation`, or `folder: true` when needed.
 - Current editor state: `get_active_document`, `get_selection`, `insert_at_cursor`, `replace_selection`.

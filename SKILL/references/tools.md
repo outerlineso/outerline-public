@@ -21,7 +21,8 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 | `get_outline` | `path` | Extract headings with levels and line numbers. |
 | `get_backlinks` | `path` | Find documents linking to the target through wiki links. |
 | `get_links` | `path` | Extract outbound wiki links and external URLs. |
-| `get_annotations` | `path` | Get highlights and annotations for a document. |
+| `get_annotations` | `path` | Get all typed annotations (highlights and comments) for a document. |
+| `list_comments` | `path` | List a document's selected-text comments with body, selected text, ID, creation time, and annotation deep link. |
 | `get_tags` | `path?` | Get all vault tags with counts, or tags for one document. |
 | `get_graph` | `center?` | Get full or local link graph. |
 | `get_deep_link` | `path?`, `uuid?`, `folder?`, `line?`, `heading?`, `annotation?` | Generate an `outerline://` URL. |
@@ -42,7 +43,9 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 | `append_to_document` | `path`, `content` | Append content to an existing note. |
 | `replace_section` | `path`, `heading`, `content` | Replace content under a heading; heading line is preserved. |
 | `edit_document` | `path`, `content` | Replace full note content; existing tags are preserved. |
+| `edit_document_title` | `path?`, `uuid?`, `title` | Set or clear a custom display title without renaming the markdown file. Blank input clears it. |
 | `create_annotation` | `path`, `highlighted_text`, `color?`, `note?` | Add highlight/annotation. Colors: `yellow`, `blue`, `green`, `pink`, `purple`. |
+| `create_comment` | `path`, `selected_text`, `body`, `approximate_offset?` | Add a nonblank comment to an exact selected-text match; `approximate_offset` picks the nearest repeat. Blank bodies, invalid offsets, and documents over the 500-comment cap are rejected. |
 | `set_tags` | `path`, `tags` | Add tags, with or without `#`. Existing tags are skipped. |
 | `rename_tag` | `old_tag`, `new_tag` | Rename a tag across all documents. |
 | `delete_tag` | `tag` | Remove a tag from all documents. |
@@ -65,7 +68,7 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 |---|---|---|
 | `list_versions` | `path?`, `uuid?`, `limit?` | List snapshots with timestamp, word count, save type. |
 | `get_version` | `path?`, `uuid?`, `version_id` | Read a specific version snapshot. |
-| `get_version_annotations` | `path?`, `uuid?`, `version_id` | Read annotations captured with a snapshot. |
+| `get_version_annotations` | `path?`, `uuid?`, `version_id` | Read highlights, notes, and comments captured with a snapshot. |
 | `diff_versions` | `path?`, `uuid?`, `version_id_a`, `version_id_b?` | Diff two snapshots, or snapshot vs current. |
 | `search_version_history` | `path?`, `uuid?`, `query` | Search all snapshots for text. |
 | `find_deleted_content` | `path?`, `uuid?`, `query` | Find matching text that existed historically but not now. |
