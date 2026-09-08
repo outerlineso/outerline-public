@@ -36,7 +36,7 @@ Outerline must have been opened at least once with a library selected. Live edit
 4. For "current selection", call `get_selection`; use `replace_selection` only when the user wants the selected text rewritten.
 5. For unknown notes, call `search_documents`, `list_documents`, `find_folder`, or read `vault://recent`/`vault://folders` before choosing a path.
 6. Read before writing unless the user explicitly provided the full target path and content.
-7. After writing, report the exact note path and tool used.
+7. After writing, report the exact note or folder path and tool used.
 
 ## Tool Selection
 
@@ -49,6 +49,8 @@ Fast defaults:
 - Follow a deeplink: `resolve_deep_link`, then `get_document` or `get_outline` as needed.
 - Create a deeplink: `get_deep_link` with `path` or `uuid`; add `line`, `heading`, `annotation`, or `folder: true` when needed.
 - Current editor state: `get_active_document`, `get_selection`, `insert_at_cursor`, `replace_selection`.
+- Create folders: `create_folder` with a vault-relative `path`; missing parents are created and existing folders are preserved.
+- Rename or move folders: `edit_folder` with `fromPath` and a complete `toPath`, including the folder name. Create the destination parent first if needed.
 - Small additions: `append_to_document`.
 - Section edits: `replace_section` with an exact heading after checking `get_outline`.
 - Full-note rewrites: `edit_document`; it preserves existing tags and is safer than many stitched section edits.
@@ -108,6 +110,13 @@ Edit a section safely:
 ```text
 get_outline({ "path": "Notes/Plan.md" })
 replace_section({ "path": "Notes/Plan.md", "heading": "Risks", "content": "<new section body>" })
+```
+
+Create a folder hierarchy, then rename and move an existing folder:
+
+```text
+create_folder({ "path": "Archive/2026" })
+edit_folder({ "fromPath": "Projects/Ideas", "toPath": "Archive/2026/Research" })
 ```
 
 Create a link for an external task:

@@ -38,8 +38,8 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 | `create_document` | `path`, `content` | Create a new markdown note, creating intermediate folders. |
 | `rename_document` | `fromPath`, `toPath` | Rename a note in place. |
 | `move_document` | `fromPath`, `toPath` | Move a note to another folder. |
-| `rename_folder` | `fromPath`, `toPath` | Rename a folder in place. |
-| `move_folder` | `fromPath`, `toPath` | Move a folder to another location. |
+| `create_folder` | `path` | Create an empty folder and missing parents. Existing folders succeed; file collisions fail. |
+| `edit_folder` | `fromPath`, `toPath` | Rename or move a folder, or both. Use the complete destination path; its parent must exist. Preserves contents and UUIDs; never merges or overwrites destinations. |
 | `append_to_document` | `path`, `content` | Append content to an existing note. |
 | `replace_section` | `path`, `heading`, `content` | Replace content under a heading; heading line is preserved. |
 | `edit_document` | `path`, `content` | Replace full note content; existing tags are preserved. |
