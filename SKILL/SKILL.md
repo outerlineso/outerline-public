@@ -26,7 +26,7 @@ codex mcp add outerline -- /Applications/Outerline.app/Contents/Resources/Outerl
 claude mcp add outerline -- /Applications/Outerline.app/Contents/Resources/OuterlineMCP --stdio
 ```
 
-Outerline must have been opened at least once with a library selected. Live editor tools require the app to be running.
+Outerline must have been opened at least once with a library selected. Live editor tools require the app to be running, and so do all vault tools when the library is a local (non-iCloud) folder.
 
 ## Core Workflow
 

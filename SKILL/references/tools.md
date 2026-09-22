@@ -6,8 +6,9 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 
 ## Access Model
 
-- Vault filesystem tools read and write configured Outerline `.md` documents and `.outerline-data` metadata. They usually work without the app running.
-- Write tools modify files on disk and notify the app to refresh when the app is running.
+- Vault filesystem tools read and write configured Outerline `.md` documents and `.outerline-data` metadata.
+- For a local (non-iCloud) library, vault tools and resources run through the running Outerline app, so Outerline must be open with that library selected. For the iCloud Library, most vault tools also work while the app is closed.
+- Write tools modify files on disk; the app refreshes afterwards when it is running.
 - Live editor tools use the running app bridge and fail cleanly if Outerline is not open.
 - Version tools read snapshots under `.outerline-data`.
 
@@ -88,6 +89,10 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 ## Error Handling
 
 - `vault_not_loaded`: Outerline has not persisted a library location. Ask the user to open Outerline and choose a library.
-- "Outerline app is not running": only live editor tools are unavailable. Use path-based tools or ask the user to open Outerline.
+- "Outerline app is not running": live editor tools are unavailable. Use path-based tools or ask the user to open Outerline.
+- "Open Outerline with your local library selected to use this tool.": the library is local and Outerline is closed. Ask the user to open Outerline; the same session works once it is open. Nothing was written.
+- "Library is switching. Try again in a moment." or "Library changed; retry against the selected library.": the user is switching or just switched libraries. Nothing was written. Retry, and re-read before writing, since paths may now refer to a different library.
+- "Outerline didn't respond in time": the app accepted the request but didn't answer within 60 seconds. It may still have been applied; re-read the affected note before retrying a write.
+- "Outerline tools are turned off": MCP is disabled in Outerline's settings. Ask the user to turn on "Allows agents to use Outerline tools".
 - Ambiguous wikilinks: `resolve_deep_link` may return `matches`; ask the user to choose unless context is decisive.
 - Invalid path: use relative vault paths and avoid `../`.
