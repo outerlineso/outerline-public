@@ -6,11 +6,11 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 
 ## Access Model
 
-- Vault filesystem tools read and write configured Outerline `.md` documents and `.outerline-data` metadata.
+- Vault filesystem tools read and write configured Outerline `.md` documents and the active metadata sidecar (`.outerline-data` or provider-safe `outerline-data`).
 - For a local (non-iCloud) library, vault tools and resources run through the running Outerline app, so Outerline must be open with that library selected. For the iCloud Library, most vault tools also work while the app is closed.
-- Write tools modify files on disk; the app refreshes afterwards when it is running.
+- Successful write tools modify files on disk; the app refreshes afterwards when it is running. No-op tag metadata repair does not request a refresh.
 - Live editor tools use the running app bridge and fail cleanly if Outerline is not open.
-- Version tools read snapshots under `.outerline-data`.
+- Version tools read snapshots under the active metadata sidecar.
 
 ## Read Tools
 
@@ -48,9 +48,10 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 | `create_annotation` | `path`, `highlighted_text`, `color?`, `note?` | Add highlight/annotation. Colors: `yellow`, `blue`, `green`, `pink`, `purple`. |
 | `create_comment` | `path`, `selected_text`, `body`, `approximate_offset?` | Add a nonblank comment to an exact selected-text match; `approximate_offset` picks the nearest repeat. Blank bodies, invalid offsets, and documents over the 500-comment cap are rejected. |
 | `set_tags` | `path`, `tags` | Add tags, with or without `#`. Existing tags are skipped. |
-| `rename_tag` | `old_tag`, `new_tag` | Rename a tag across all documents. |
-| `delete_tag` | `tag` | Remove a tag from all documents. |
-| `set_tag_color` | `tag`, `color?` | Assign or clear tag color. |
+| `rename_tag` | `old_tag`, `new_tag` | Rename a tag across all documents. Invalid/no-op renames do not flush editors. Corrupt or newer tag metadata stops before editor saves; affected composition/save failures stop before tag changes. |
+| `delete_tag` | `tag` | Remove a tag from all documents. Corrupt or newer tag metadata stops before editor saves; affected composition/save failures stop before tag changes. |
+| `repair_tag_metadata` | `confirm_reset` (must be `true`) | Repair unreadable tag metadata after explicit user authorization. The tool backs up the exact original bytes, resets existing color assignments, leaves notes unchanged, and reports the backup location. If metadata is missing or readable, it does nothing. Retry the original rename or delete in a separate call. |
+| `set_tag_color` | `tag`, `color?` | Assign or clear a tag color (`yellow`, `green`, `blue`, `pink`, or `purple`). |
 | `star_document` | `path` | Star a document. |
 | `unstar_document` | `path` | Remove a document star. |
 
@@ -67,7 +68,7 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 
 | Tool | Inputs | Use |
 |---|---|---|
-| `list_versions` | `path?`, `uuid?`, `limit?` | List snapshots with timestamp, word count, save type. |
+| `list_versions` | `path?`, `uuid?`, `limit?` | List snapshots with opaque version IDs, timestamp, word count, save type. Reuse the returned ID for reads, diffs, and restores; timestamp-only IDs can be ambiguous after identity convergence. |
 | `get_version` | `path?`, `uuid?`, `version_id` | Read a specific version snapshot. |
 | `get_version_annotations` | `path?`, `uuid?`, `version_id` | Read highlights, notes, and comments captured with a snapshot. |
 | `diff_versions` | `path?`, `uuid?`, `version_id_a`, `version_id_b?` | Diff two snapshots, or snapshot vs current. |
@@ -94,5 +95,8 @@ The exact callable namespace depends on the client. Claude and Codex may expose 
 - "Library is switching. Try again in a moment." or "Library changed; retry against the selected library.": the user is switching or just switched libraries. Nothing was written. Retry, and re-read before writing, since paths may now refer to a different library.
 - "Outerline didn't respond in time": the app accepted the request but didn't answer within 60 seconds. It may still have been applied; re-read the affected note before retrying a write.
 - "Outerline tools are turned off": MCP is disabled in Outerline's settings. Ask the user to turn on "Allows agents to use Outerline tools".
+- Corrupt tag color metadata: `rename_tag` and `delete_tag` stop before affected editor saves or note changes. Explain the color reset and exact-byte backup, obtain explicit user authorization, then call `repair_tag_metadata` with `confirm_reset: true`. It does not retry the original operation.
+- Newer-schema tag metadata: update Outerline; do not reset the metadata. File access or sync errors require resolving access or waiting for sync rather than repair.
+- Partial tag mutation: the error lists completed note paths and the failed path. Inspect the affected notes before explicitly retrying; completed changes are not rolled back.
 - Ambiguous wikilinks: `resolve_deep_link` may return `matches`; ask the user to choose unless context is decisive.
 - Invalid path: use relative vault paths and avoid `../`.

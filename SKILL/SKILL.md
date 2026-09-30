@@ -1,6 +1,6 @@
 ---
 name: outerline
-description: "Use Outerline MCP to read, search, edit, organize, tag, star, comment on, and deep-link markdown notes. Trigger for Outerline vault content, current notes/selections, or outerline:// links."
+description: "Use Outerline MCP to work with markdown notes, folders, tags, comments, links, and version history, or to recover tag metadata with authorization. Trigger for Outerline vault content, current notes/selections, or outerline:// links."
 ---
 
 # Outerline MCP
@@ -13,9 +13,9 @@ Use this skill when the user says any of:
 
 - "use Outerline", "read this in Outerline", "my Outerline notes", "Outerline vault/library"
 - "current document", "current note", "selection", or "cursor" in an Outerline context
-- "search/list/create/edit/move/rename/tag/star in Outerline"
+- "search/list/create/edit/move/rename/tag/star/comment in Outerline" or Outerline version history or tag metadata recovery
 - an `outerline://...` URL
-- any question about note content, document organization, writing, or tags when working inside the Outerline repository, even if "Outerline" is not named explicitly
+- any question about note content, document organization, writing, tags, comments, or version history when working inside the Outerline repository, even if "Outerline" is not named explicitly
 
 Do not use this skill for Swift source code, the app codebase, or build/test operations unless the user is asking about Outerline note content related to that work.
 
@@ -36,7 +36,7 @@ Outerline must have been opened at least once with a library selected. Live edit
 4. For "current selection", call `get_selection`; use `replace_selection` only when the user wants the selected text rewritten.
 5. For unknown notes, call `search_documents`, `list_documents`, `find_folder`, or read `vault://recent`/`vault://folders` before choosing a path.
 6. Read before writing unless the user explicitly provided the full target path and content.
-7. After writing, report the exact note or folder path and tool used.
+7. After writing, report the tool used and the affected note, folder, or metadata. For tag metadata repair, include the returned backup location.
 
 ## Tool Selection
 
@@ -54,8 +54,11 @@ Fast defaults:
 - Small additions: `append_to_document`.
 - Section edits: `replace_section` with an exact heading after checking `get_outline`.
 - Full-note rewrites: `edit_document`; it preserves existing tags and is safer than many stitched section edits.
-- Folder/tag overview or recent activity: read `vault://folders`, `vault://tags`, or `vault://recent` before making assumptions about vault structure.
-- Version recovery: `list_versions`, `diff_versions`, `search_version_history`, `find_deleted_content`; use `restore_version` only when explicitly requested.
+- Display titles: `edit_document_title` with a document `path` or `uuid` and `title`; blank `title` clears the customization without renaming the file.
+- Tags, colors, and stars: `get_tags` or `get_tag_colors` to inspect, `set_tags` to add tags, `set_tag_color` to assign or clear a color, and `star_document` or `unstar_document` to change stars.
+- Tag rename/delete: `rename_tag` and `delete_tag` check tag color metadata before saving affected open notes or changing tags. If the check fails, follow the tag metadata recovery guidance below before retrying.
+- Vault overview: read `vault://folders`, `vault://tags`, `vault://starred`, `vault://recent`, or `vault://graph` for quick structure and activity.
+- Version history: `list_versions` to find snapshot IDs, `get_version` or `get_version_annotations` to inspect them, `diff_versions`, `search_version_history`, `find_deleted_content`, or `get_writing_timeline` to compare history. Use `restore_version` only when explicitly requested.
 
 For the full tool and resource catalog, read [references/tools.md](references/tools.md).
 
@@ -79,8 +82,10 @@ Always call `resolve_deep_link` for pasted URLs. It returns the target kind, pat
 - Do not bypass MCP path validation by editing vault files directly.
 - Do not run shell commands to open `outerline://` links unless the user explicitly asks to open the app.
 - Do not use broad write tools (`rename_tag`, `delete_tag`, folder moves, version restore) without clear user intent.
+- Before calling `repair_tag_metadata`, get explicit user authorization to reset existing tag color assignments. Explain that the tool backs up the exact original metadata bytes, leaves notes unchanged, and returns the backup location. Use `confirm_reset: true` only after that authorization; retry the original rename or delete in a separate call.
+- Use `repair_tag_metadata` only for corrupt tag metadata. For a newer schema, ask the user to update Outerline; for a file access or sync error, resolve that problem first. If a tag batch reports completed note paths, inspect those notes before any retry because the batch may be partial.
 - For writes based on fuzzy language, first discover the exact document/folder and state the resolved path.
-- If `get_active_document`, `get_selection`, `insert_at_cursor`, or `replace_selection` says the app is not running, ask the user to open Outerline or switch to path-based tools.
+- If a live editor tool says the app is not running, ask the user to open Outerline. Path-based vault tools can work with the app closed only for the built-in iCloud Library; a local library still requires the app to be open.
 
 ## Common Patterns
 
